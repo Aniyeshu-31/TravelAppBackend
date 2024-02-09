@@ -2,9 +2,10 @@ import jwt from 'jsonwebtoken'
 
 export const verifyToken = (req,res,next)=>{
    const token = req.cookies.accessToken
-   if(!token){
-    return res.status(401).json({success:false,message:'Not an Authorize User'});
-   }
+    console.log(token);
+  //  if(!token){
+  //   return res.status(401).json({success:false,message:'Not an Authorize User'});
+  //  }
 
    jwt.verify(token,process.env.JWT_SECRET_KEY,(err,user)=>{
     if(err){
