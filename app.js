@@ -16,7 +16,7 @@ const corsOption = {
   credentials: true,
 }
 // Allow frontend at localhost:3000
-const corsOptions = {
+const allowedOrigins = {
   origin: ['https://transcendent-sundae-2bb9db.netlify.app','https://backend-travel-app.onrender.com',],
   credentials: true, // Allow credentials (cookies, etc.) if needed
 }
