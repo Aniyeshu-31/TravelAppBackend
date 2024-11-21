@@ -15,9 +15,9 @@ const corsOption = {
   origin: true,
   credentials: true,
 }
-// Allow frontend at localhost:3000
+// Allow frontend at https://backend-travel-app.onrender.com
 const corsOptions = {
-  origin: 'http://localhost:3000', // Allow requests from this origin
+  origin: 'https://backend-travel-app.onrender.com', // Allow requests from this origin
   credentials: true, // Allow credentials (cookies, etc.) if needed
 }
 app.use(cors(corsOptions))
