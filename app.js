@@ -16,20 +16,10 @@ const corsOption = {
   credentials: true,
 }
 // Allow frontend at localhost:3000
-const allowedOrigins = {
-  origin: ['http://localhost:3000','https://transcendent-sundae-2bb9db.netlify.app'],
-  credentials: true, // Allow credentials (cookies, etc.) if needed
-}
 const corsOptions = {
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true) // Allow the request
-    } else {
-      callback(new Error('Not allowed by CORS')) // Reject the request
-    }
-  },
-  credentials: true, // Allow cookies
-}
+  origin: ['http://localhost:3000', 'https://transcendent-sundae-2bb9db.netlify.app'], // Allow local dev and deployed frontend
+  credentials: true, // Allow cookies and credentials
+};
 app.use(cors(corsOptions))
 mongoose.set('strictQuery', false)
 const connect = async () => {
