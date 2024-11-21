@@ -17,7 +17,7 @@ const corsOption = {
 }
 // Allow frontend at localhost:3000
 const allowedOrigins = {
-  origin: ['https://transcendent-sundae-2bb9db.netlify.app','https://backend-travel-app.onrender.com',],
+  origin: ['http://localhost:3000','https://transcendent-sundae-2bb9db.netlify.app'],
   credentials: true, // Allow credentials (cookies, etc.) if needed
 }
 const corsOptions = {
