@@ -17,8 +17,18 @@ const corsOption = {
 }
 // Allow frontend at localhost:3000
 const corsOptions = {
-  origin: ['http://localhost:3000','https://backend-travel-app.onrender.com','https://transcendent-sundae-2bb9db.netlify.app'],
+  origin: ['https://transcendent-sundae-2bb9db.netlify.app','https://backend-travel-app.onrender.com',],
   credentials: true, // Allow credentials (cookies, etc.) if needed
+}
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true) // Allow the request
+    } else {
+      callback(new Error('Not allowed by CORS')) // Reject the request
+    }
+  },
+  credentials: true, // Allow cookies
 }
 app.use(cors(corsOptions))
 mongoose.set('strictQuery', false)
