@@ -1,4 +1,4 @@
-import express from 'express'
+  import express from 'express'
 import dotenv from 'dotenv'
 import mongoose from 'mongoose'
 import cookieParser from 'cookie-parser'
@@ -15,9 +15,9 @@ const corsOption = {
   origin: true,
   credentials: true,
 }
-// Allow frontend at https://backend-travel-app.onrender.com
+// Allow frontend at localhost:3000
 const corsOptions = {
-  origin: 'https://backend-travel-app.onrender.com', // Allow requests from this origin
+  origin: ['http://localhost:3000', 'https://backend-travel-app.onrender.com'],
   credentials: true, // Allow credentials (cookies, etc.) if needed
 }
 app.use(cors(corsOptions))
