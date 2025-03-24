@@ -1,5 +1,5 @@
 import Stripe from 'stripe'
-import Booking from '../models/Booking.js' // Ensure this path is correct
+import Booking from '../models/booking.js' // Ensure this path is correct
 import dotenv from 'dotenv'
 
 dotenv.config()
