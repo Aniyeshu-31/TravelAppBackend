@@ -1,27 +1,46 @@
 import User from '../models/User.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
+const isValidEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return emailRegex.test(email)
+}
 
 // Register User
 export const registerUser = async (req, res, next) => {
-    const salt = bcrypt.genSaltSync(10);
-    const hashedPassword = bcrypt.hashSync(req.body.password, salt);
+  const { username, email, password, photo } = req.body
 
-    try {
-        const newUser = new User({
-            username: req.body.username,
-            email: req.body.email,
-            password: hashedPassword,
-            photo: req.body.photo,
-        });
+  // Validate email format
+  if (!isValidEmail(email)) {
+    return res
+      .status(400)
+      .json({
+        success: false,
+        message:
+          'Invalid email format. Please provide a valid email with a proper domain (e.g., .com, .in, .org).',
+      })
+  }
 
-        await newUser.save();
-        res.status(200).json({ success: true, message: 'Successfully registered!' });
-    } catch (err) {
-        console.error('Registration Error:', err);
-        res.status(500).json({ success: false, message: 'Unable to register the user!' });
-    }
-};
+  const salt = bcrypt.genSaltSync(10)
+  const hashedPassword = bcrypt.hashSync(password, salt)
+
+  try {
+    const newUser = new User({
+      username,
+      email,
+      password: hashedPassword,
+      photo,
+    })
+
+    await newUser.save()
+    res.status(200).json({ success: true, message: 'Successfully registered!' })
+  } catch (err) {
+    console.error('Registration Error:', err)
+    res
+      .status(500)
+      .json({ success: false, message: 'Unable to register the user!' })
+  }
+}
 
 // Login User
 export const LoginUser = async (req, res, next) => {
