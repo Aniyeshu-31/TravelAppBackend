@@ -11,5 +11,5 @@ const router = express.Router()
 router.post('/', verifyUser, createbooking)
 router.get('/:id', verifyUser, getBookingDetails)
 router.get('/', verifyAdmin, getAllBookingDetails)
-router.get('/verify-payment', verifyUser, confirmBooking)
+router.get('/verify-payment', confirmBooking)
 export default router
