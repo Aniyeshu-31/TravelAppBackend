@@ -9,9 +9,11 @@ const bookingSchema = new mongoose.Schema(
     },
     userEmail: {
       type: String,
+      
     },
     tourName: {
       type: String,
+      
     },
     fullName: {
       type: String,
@@ -29,17 +31,17 @@ const bookingSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
-    totalAmount: {
-      type: Number,
+    totalAmount:{
+      type: Number
     },
     sessionId: {
       type: String, // To store Stripe session ID
       required: true,
       unique: true,
     },
-    status: {
-      type: String,
-    },
+    status:{
+      type:String,
+    }
   },
   { timestamps: true }
 )

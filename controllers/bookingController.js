@@ -3,8 +3,11 @@ import Booking from '../models/booking.js' // Ensure this path is correct
 import dotenv from 'dotenv'
 
 dotenv.config()
-const stripe = new Stripe(process.env.STRIPE_URL_BACKEND)
-console.log(process.env.STRIPE_URL_BACKEND)
+
+// ✅ Use the correct Stripe key from .env
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
+console.log('Stripe Secret Key:', process.env.STRIPE_SECRET_KEY)
+
 export const createbooking = async (req, res) => {
   try {
     const { bookingDetails } = req.body
@@ -15,6 +18,7 @@ export const createbooking = async (req, res) => {
         .json({ success: false, message: 'No booking details provided' })
     }
 
+    // ✅ Construct Line Items for Stripe Checkout
     const lineItems = bookingDetails.map((booking) => ({
       price_data: {
         currency: 'usd',
@@ -24,34 +28,21 @@ export const createbooking = async (req, res) => {
       quantity: booking.guestSize,
     }))
 
+    // ✅ Create a Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: lineItems,
       mode: 'payment',
-      success_url: `${process.env.CLIENT_URL}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
+      success_url:`${process.env.CLIENT_URL}/thank-you`,
       cancel_url: `${process.env.CLIENT_URL}/retry-booking`,
     })
-    //  userId: user && user._id,
-    // userEmail: user && user.email,
-    // tourname: title,
-    // fullName: '',
-    // phone: '',
-    // guestSize: 1,
-    // bookAt: '',
 
-    // ✅ Save the booking with the session ID
-    const newBooking = new Booking({
-      userId: bookingDetails[0].userId,
-      tourname: bookingDetails[0].tourname,
-      fullName: bookingDetails[0].fullName,
-      phone: bookingDetails[0].phone,
-      guestSize: bookingDetails[0].guestSize,
-      totalAmount: bookingDetails[0].price,
-      stripeSessionId: session.id,
-      status: 'pending', // Mark as pending until payment is confirmed
-    })
+        if (!session || !session.id) {
+          throw new Error('Failed to create Stripe session')
+        }
+    
+    // ✅ Save the Booking with the Stripe Session ID
 
-    await newBooking.save()
 
     return res.status(200).json({ success: true, sessionId: session.id })
   } catch (err) {
@@ -66,7 +57,7 @@ export const createbooking = async (req, res) => {
 
 export const confirmBooking = async (req, res) => {
   try {
-    const { sessionId } = req.query
+    const { sessionId } = req.body // ✅ Get sessionId from req.body
 
     if (!sessionId) {
       return res
@@ -74,23 +65,36 @@ export const confirmBooking = async (req, res) => {
         .json({ success: false, message: 'Session ID is required' })
     }
 
-    // ✅ Find and update the booking
-    const updatedBooking = await Booking.findOneAndUpdate(
-      { stripeSessionId: sessionId },
-      { status: 'confirmed' },
-      { new: true }
-    )
+    // ✅ Find and update the booking status
+    // const updatedBooking = await Booking.findOneAndUpdate(
+    //   { stripeSessionId: sessionId },
+    //   { status: 'confirmed' },
+    //   { new: true }
+    // )
+         const newBooking = new Booking({
+           userId: bookingDetails[0].userId,
+           userEmail: bookingDetails[0].userEmail,
+           tourname: bookingDetails[0].tourname,
+           fullName: bookingDetails[0].fullName,
+           phone: bookingDetails[0].phone,
+           guestSize: bookingDetails[0].guestSize,
+           totalAmount: bookingDetails[0].price,
+           bookAt: bookingDetails[0].bookAt || new Date(),
+           sessionId: sessionId,
+           status: 'confirmed', // Mark as confirmed when payment is confirmed
+         })
 
-    if (!updatedBooking) {
-      return res
-        .status(404)
-        .json({ success: false, message: 'Booking not found' })
-    }
+         await newBooking.save()
+    // if (!updatedBooking) {
+    //   return res
+    //     .status(404)
+    //     .json({ success: false, message: 'Booking not found' })
+    // }
 
     return res.status(200).json({
       success: true,
       message: 'Booking confirmed',
-      data: updatedBooking,
+      data: newBooking,
     })
   } catch (err) {
     console.error('❌ Booking Confirmation Error:', err.message)
@@ -102,31 +106,35 @@ export const confirmBooking = async (req, res) => {
   }
 }
 
-export const getBookingDetails = async (req, res, next) => {
+export const getBookingDetails = async (req, res) => {
   const id = req.params.id
   try {
-    const Book = await Booking.findById(id)
+    const book = await Booking.findById(id)
+    if (!book) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'Booking not found!' })
+    }
     res.status(200).json({
       success: true,
       message: 'Booking Fetched Successfully!!',
-      data: Book,
+      data: book,
     })
   } catch (err) {
-    res.status(404).json({
+    res.status(500).json({
       success: false,
-      message: 'Booking not Found!',
+      message: 'Internal Server Error!',
     })
   }
 }
 
-export const getAllBookingDetails = async (req, res, next) => {
-  //    const id=req.params.id;
+export const getAllBookingDetails = async (req, res) => {
   try {
-    const Book = await Booking.find()
+    const bookings = await Booking.find()
     res.status(200).json({
       success: true,
-      message: 'All Booking Fetched Successfully!!',
-      data: Book,
+      message: 'All Bookings Fetched Successfully!!',
+      data: bookings,
     })
   } catch (err) {
     res.status(500).json({
