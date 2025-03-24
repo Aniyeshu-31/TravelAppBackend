@@ -1,35 +1,47 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose'
 
 const bookingSchema = new mongoose.Schema(
   {
     userId: {
-      type: String 
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User', // Assuming you have a User model
+      required: true,
     },
     userEmail: {
       type: String,
     },
-    // tourName:{
-    //     type:String,
-    //     required:true
-    // },
-  //  FullName:{
-  //     type: String,
-  //     required: true,
-  //   },
-    guestSize:{
-        type:Number,
-        required:true
+    tourName: {
+      type: String,
     },
-    phone:{
-        type:Number,
-        required:true
+    fullName: {
+      type: String,
+      required: true,
     },
-    bookAt:{
-        type:Date,
-        required:true
-    }
+    guestSize: {
+      type: Number,
+      required: true,
+    },
+    phone: {
+      type: String, // Changed from Number to String for flexibility
+      required: true,
+    },
+    bookAt: {
+      type: Date,
+      required: true,
+    },
+    totalAmount: {
+      type: Number,
+    },
+    sessionId: {
+      type: String, // To store Stripe session ID
+      required: true,
+      unique: true,
+    },
+    status: {
+      type: String,
+    },
   },
   { timestamps: true }
-);
+)
 
-export default mongoose.model("booking", bookingSchema);
+export default mongoose.model('Booking', bookingSchema)
