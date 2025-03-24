@@ -23,12 +23,12 @@ export const createbooking = async (req, res) => {
         },
         unit_amount: booking.totalAmount, // Dollars
       },
-      guestSize: booking.guestSize,
+      quantity: booking.guestSize,
     }))
      console.log('🟢 Line Items:', lineItems)
     // ✅ Create a Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card','amazon_pay'],
+      payment_method_types: ['card','paypal'],
       line_items: lineItems,
       mode: 'payment',
       success_url: `${process.env.CLIENT_URL}/thank-you`,
