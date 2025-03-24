@@ -4,7 +4,7 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 const stripe = new Stripe(process.env.STRIPE_URL_BACKEND)
-console.log(process.env.STRIPE_URL_BACKEND)
+console.log(process.env.STRIPE_URL_BACKEND);
 export const createbooking = async (req, res) => {
   try {
     const { bookingDetails } = req.body
@@ -25,10 +25,10 @@ export const createbooking = async (req, res) => {
       },
       guestSize: booking.guestSize,
     }))
-    console.log('🟢 Line Items:', lineItems)
+     console.log('🟢 Line Items:', lineItems)
     // ✅ Create a Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card', 'amazon_pay'],
+      payment_method_types: ['card','amazon_pay'],
       line_items: lineItems,
       mode: 'payment',
       success_url: `${process.env.CLIENT_URL}/thank-you`,
@@ -38,23 +38,21 @@ export const createbooking = async (req, res) => {
     return res.status(200).json({ success: true, sessionId: session.id })
   } catch (err) {
     console.error('❌ Stripe Session Error:', err.message)
-    res.status(500).json({
-      success: false,
-      message: 'Stripe session creation failed',
-      error: err.message,
-    })
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: 'Stripe session creation failed',
+        error: err.message,
+      })
   }
 }
-export const getBookingDetails = async (req, res, next) => {
-  const id = req.params.id
-  try {
-    const Book = await Booking.findById(id)
-    res.status(200).json({
-      success: true,
-      message: 'Booking Fetched Successfully!!',
-      data: Book,
-    })
-  } catch (err) {
+export const getBookingDetails= async(req,res,next)=>{
+   const id=req.params.id;
+   try {
+      const Book = await Booking.findById(id);
+      res.status(200).json({success:true,message:'Booking Fetched Successfully!!',data:Book});
+   } catch (err) {
     res.status(404).json({
       success: false,
       message: 'Booking not Found!',
